@@ -10,8 +10,7 @@ use AnyEvent::Socket;
 use AnyEvent::Handle;
 
 my $j = AnyEvent->condvar;
-my @handles;
-my %timers;
+my %handles;
 
 my $server = tcp_server undef, 9934, sub {
    my ($fh, $host, $port) = @_;
@@ -25,9 +24,8 @@ my $server = tcp_server undef, 9934, sub {
          substr($hdl->{rbuf}, 0) = '';
       },
    );
-   push @handles, $hdl;
-
-   $timers{$hdl} = AnyEvent->timer(
+   $handles{$hdl} = $hdl;
+   $hdl->{timer} = AnyEvent->timer(
       after    => 5,
       interval => 5,
       cb       => sub { $hdl->push_write("ping!\n") },
@@ -39,7 +37,7 @@ my $server = tcp_server undef, 9934, sub {
 
 $j->recv;
 
-sub disconnect ($hdl) {
+sub disconnect ($hdl, @) {
    warn "client disconnected\n";
-   delete $timers{$hdl}
+   delete $handles{$hdl}
 }
