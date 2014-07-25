@@ -8,8 +8,8 @@ use experimental 'signatures', 'postderef';
 use AnyEvent;
 use AnyEvent::Socket;
 use AnyEvent::Handle;
+use AnyEvent::Loop;
 
-my $j = AnyEvent->condvar;
 my %handles;
 
 my $server = tcp_server undef, 9934, sub {
@@ -35,7 +35,7 @@ my $server = tcp_server undef, 9934, sub {
    warn "listening on $thishost:$thisport\n";
 };
 
-$j->recv;
+AnyEvent::Loop::run;
 
 sub disconnect ($hdl, @) {
    warn "client disconnected\n";
