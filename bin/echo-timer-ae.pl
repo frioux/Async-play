@@ -9,6 +9,7 @@ use AnyEvent;
 use AnyEvent::Socket;
 use AnyEvent::Handle;
 use AnyEvent::Loop;
+use Scalar::Util 'refaddr';
 
 my %handles;
 
@@ -24,7 +25,7 @@ my $server = tcp_server undef, 9934, sub {
          substr($hdl->{rbuf}, 0) = '';
       },
    );
-   $handles{$hdl} = $hdl;
+   $handles{refaddr $hdl} = $hdl;
    $hdl->{timer} = AnyEvent->timer(
       after    => 5,
       interval => 5,
@@ -39,5 +40,5 @@ AnyEvent::Loop::run;
 
 sub disconnect ($hdl, @) {
    warn "client disconnected\n";
-   delete $handles{$hdl}
+   delete $handles{refaddr $hdl}
 }
