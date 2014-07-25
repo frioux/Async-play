@@ -18,7 +18,8 @@ my $server = tcp_server undef, 9934, sub {
 
    my $hdl = AnyEvent::Handle->new(
       fh => $fh,
-      on_eof => sub { warn "client connection $host:$port: eof\n"; delete $timers{shift @_} },
+      on_eof => \&disconnect,
+      on_error => \&disconnect,
       on_read => sub ($hdl) {
          $hdl->push_write($hdl->rbuf);
          substr($hdl->{rbuf}, 0) = '';
@@ -37,3 +38,8 @@ my $server = tcp_server undef, 9934, sub {
 };
 
 $j->recv;
+
+sub disconnect ($hdl) {
+   warn "client disconnected\n";
+   delete $timers{$hdl}
+}
