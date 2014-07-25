@@ -21,7 +21,7 @@ my $server = tcp_server undef, 9934, sub {
       on_eof => sub { warn "client connection $host:$port: eof\n"; delete $timers{shift @_} },
       on_read => sub ($hdl) {
          $hdl->push_write($hdl->rbuf);
-         $hdl->{rbuf} = '';
+         substr($hdl->{rbuf}, 0) = '';
       },
    );
    push @handles, $hdl;
