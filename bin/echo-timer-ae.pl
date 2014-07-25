@@ -13,9 +13,7 @@ use Scalar::Util 'refaddr';
 
 my %handles;
 
-my $server = tcp_server undef, 9934, sub {
-   my ($fh, $host, $port) = @_;
-
+my $server = tcp_server undef, 9934, sub ($fh, $host, $port) {
    my $hdl = AnyEvent::Handle->new(
       fh => $fh,
       on_eof => \&disconnect,
@@ -30,8 +28,7 @@ my $server = tcp_server undef, 9934, sub {
       after    => 5,
       interval => 5,
       cb       => sub { $hdl->push_write("ping!\n") },
-   );
-
+   )
 }, sub ($fh, $thishost, $thisport) {
    warn "listening on $thishost:$thisport\n";
 };
